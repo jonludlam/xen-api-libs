@@ -80,6 +80,8 @@ let content_type_hdr = "Content-Type"
 
 let user_agent_hdr = "User-Agent"
 
+let acrh_hdr = "access-control-request-headers: "
+
 let myprint fmt = debug fmt
 
 let output_http oc headers =
@@ -97,7 +99,7 @@ let strip_cr r =
     if last_char <> "\r" then raise Http_parse_failure;
     String.sub r 0 ((String.length r)-1)
 
-type method_t = Get | Post | Put | Connect | Unknown of string
+type method_t = Get | Post | Put | Connect | Options | Unknown of string
 
 and authorization = 
     | Basic of string * string
@@ -126,9 +128,9 @@ module Response = struct
 end
 
 let string_of_method_t = function
-  | Get -> "GET" | Post -> "POST" | Put -> "PUT" | Connect -> "CONNECT" | Unknown x -> "Unknown " ^ x
+  | Get -> "GET" | Post -> "POST" | Put -> "PUT" | Connect -> "CONNECT" | Options -> "OPTIONS" | Unknown x -> "Unknown " ^ x
 let method_t_of_string = function
-  | "GET" -> Get | "POST" -> Post | "PUT" -> Put | "CONNECT" -> Connect | x -> Unknown x
+  | "GET" -> Get | "POST" -> Post | "PUT" -> Put | "CONNECT" -> Connect | "OPTIONS" -> Options | x -> Unknown x
 
 
 let nullreq = { m=Unknown "";

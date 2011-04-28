@@ -64,7 +64,8 @@ val response_forbidden : Unix.file_descr -> unit
 val response_file :
   ?hdrs:'a list ->
   mime_content_type:string option -> Unix.file_descr -> string -> unit
-
+val response_ok : Http.request -> Unix.file_descr -> ?hdrs:(string list) -> unit
+val respond_to_options : Http.request -> Unix.file_descr -> unit
 val default_callback : Http.request -> Buf_io.t -> unit
 
 exception Too_many_headers

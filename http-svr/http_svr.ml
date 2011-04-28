@@ -53,12 +53,14 @@ let connect_handler_table : (uri_path, req_handler) Hashtbl.t = Hashtbl.create 3
 let get_handler_table : (uri_path, req_handler) Hashtbl.t = Hashtbl.create 3
 let post_handler_table : (uri_path, req_handler) Hashtbl.t = Hashtbl.create 3
 let put_handler_table : (uri_path, req_handler) Hashtbl.t = Hashtbl.create 3
+let options_handler_table : (uri_path, req_handler) Hashtbl.t = Hashtbl.create 3
     
 let handler_table = function
     | Get -> get_handler_table 
     | Post -> post_handler_table
     | Put -> put_handler_table
     | Connect -> connect_handler_table
+	| Options -> options_handler_table
     | x -> failwith (Printf.sprintf "No handler table for HTTP method %s" (Http.string_of_method_t x))
 
 let add_handler ty uri handler = 
@@ -139,10 +141,26 @@ let response_file ?(hdrs=[]) ~mime_content_type s file =
     (fun () -> 
       close_in ic)
 
+let response_ok req s ?(hdrs=[]) =
+	headers s ((Http.http_200_ok ()) @ hdrs)
+
+let respond_to_options req fd =
+	let access_control_allow_headers = 
+		try
+			let acrh = List.find (fun s -> Stringext.String.startswith Http.acrh_hdr (String.lowercase s)) req.Http.headers in
+			Printf.sprintf "%s, X-Requested-With" (end_of_string acrh (String.length acrh_hdr))
+		with _ -> "X-Requested-With"
+	in
+	response_ok req fd ~hdrs:[ 
+		"Access-Control-Allow-Origin: *"; 
+		Printf.sprintf "Access-Control-Allow-Headers: %s" access_control_allow_headers 
+	]
+
 (** If no handler matches the request then call this callback *)
 let default_callback req bio = 
   response_forbidden (Buf_io.fd_of bio);
   req.close <- true
+
     
 
 let write_error bio message =

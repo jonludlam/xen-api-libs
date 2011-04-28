@@ -12,7 +12,7 @@
  * GNU Lesser General Public License for more details.
  *)
 (** Recognised HTTP methods *)
-type method_t = Get | Post | Put | Connect | Unknown of string
+type method_t = Get | Post | Put | Connect | Options | Unknown of string
 val string_of_method_t : method_t -> string
 
 (** Exception raised when parsing start line of request *)
@@ -85,6 +85,8 @@ val subtask_of_hdr : string
 
 (** Header used for User-Agent string *)
 val user_agent_hdr : string
+
+val acrh_hdr : string
 
 val content_type_hdr : string
 

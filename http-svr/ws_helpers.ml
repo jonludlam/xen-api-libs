@@ -29,6 +29,8 @@
 
 open Stringext
 
+type protocol = | Hixie76 | Hybi10
+
 (* Defined in the websockets protocol document *)
 let ws_uuid = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11" 
 
@@ -211,21 +213,20 @@ let hixie_v76_upgrade req s =
   let s1 = marshal_int32 v1 in
   let s2 = marshal_int32 v2 in
   let s3 = String.make 8 '\000' in
-  Buf_io.really_input s s3 0 8;
+  Unixext.really_read s s3 0 8;
   let string = Printf.sprintf "%s%s%s" s1 s2 s3 in
   let digest = Digest.string string in
   
   let host = find_header headers "host" in
   let origin = find_header headers "origin" in
   let headers = http_101_websocket_upgrade_76 origin host req.Http.Request.uri in
-  let fd = Buf_io.fd_of s in
-  Http.output_http fd headers;
-  ignore(Unix.write fd digest 0 16)
+  Http.output_http s headers;
+  ignore(Unix.write s digest 0 16)
 
-(* Ideally would check which upgrade path to take. For now, choose the 
-   current version. hixie76 has security problems anyway *)
 let upgrade req s = 
-  v10_upgrade req s
+  if List.mem_assoc "Sec-WebSocket-Key1" req.Http.Request.additional_headers 
+  then (hixie_v76_upgrade req s; Hixie76)
+  else (v10_upgrade req s; Hybi10)
 
 (* The following copyright notice is relevant to the function marked above *)
 

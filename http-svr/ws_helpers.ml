@@ -139,12 +139,18 @@ let sha_1 s =
   h
 
 
-let http_101_websocket_upgrade_76 origin host uri =
+let http_101_websocket_upgrade_76 origin host protocol uri =
+  let extra = match protocol with 
+    | Some x -> [ Printf.sprintf "Sec-WebSocket-Protocol: %s" x ]
+    | None -> []
+  in
   [ "HTTP/1.0 101 WebSocket Protocol Handshake";
     "Upgrade: WebSocket";
     "Connection: Upgrade";
     Printf.sprintf "Sec-WebSocket-Origin: %s" origin;
-    Printf.sprintf "Sec-WebSocket-Location: ws://%s%s" host uri; "" ]
+    Printf.sprintf "Sec-WebSocket-Location: ws://%s%s" host uri; ] 
+    @ extra @ [""]
+
 
 let http_101_websocket_upgrade_15 key  =
   [ "HTTP/1.0 101 Switching Protocols";
@@ -219,12 +225,15 @@ let hixie_v76_upgrade req s =
   
   let host = find_header headers "host" in
   let origin = find_header headers "origin" in
-  let headers = http_101_websocket_upgrade_76 origin host req.Http.Request.uri in
+  let protocol = try Some (find_header headers "sec-websocket-protocol") with _ -> None in
+  let real_uri = req.Http.Request.uri ^ "?" ^ (String.concat "&" (List.map (fun (x,y) -> Printf.sprintf "%s=%s" x y) req.Http.Request.query)) in
+  let headers = http_101_websocket_upgrade_76 origin host protocol real_uri in
   Http.output_http s headers;
   ignore(Unix.write s digest 0 16)
 
 let upgrade req s = 
-  if List.mem_assoc "Sec-WebSocket-Key1" req.Http.Request.additional_headers 
+  Unixext.write_string_to_file "/tmp/wsheaders" (String.concat "\n" (List.map (fun (x,y) -> Printf.sprintf "%s: %s" x y) req.Http.Request.additional_headers));
+  if List.mem_assoc "sec-websocket-key1" req.Http.Request.additional_headers 
   then (hixie_v76_upgrade req s; Hixie76)
   else (v10_upgrade req s; Hybi10)
 

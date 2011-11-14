@@ -1,0 +1,23 @@
+Set the right RPCLIGHTFLAGS and rpc-light requires.
+--- a/config.mk.in	2011-11-14 13:58:01.000000000 +0000
++++ b/config.mk.in	2011-11-14 13:58:21.000000000 +0000
+@@ -28,7 +28,7 @@
+ OCAMLCFLAGS = -dtypes
+ OCAMLOPTFLAGS = -g -dtypes
+ 
+-RPCLIGHTFLAGS = -package camlp4,type-conv -ppopt -I -ppopt /usr/lib/ocaml/type-conv  -ppopt -I -ppopt ../rpc-light -ppopt pa_rpc.cma -syntax camlp4o -I ../rpc-light -I ../jsonrpc -I ../rpc-light 
++RPCLIGHTFLAGS = -package camlp4,type-conv -ppopt -I -ppopt ../rpc-light -ppopt pa_rpc.cma -syntax camlp4o -I ../rpc-light -I ../jsonrpc -I ../rpc-light
+ 
+ DOCDIR = ../doc
+ 
+--- a/rpc-light/META
++++ b/rpc-light/META
+@@ -5,7 +5,7 @@
+ package "syntax" (
+   version = "0.1"
+   description = "rpc-light: library to marshalling/unmarshalling ML types to/from RPC intermediate language"
+-  requires = "type-conv.syntax"
++  requires = "type-conv"
+   archive(syntax,preprocessor) = "pa_rpc.cma"
+   archive(syntax,toploop) = "pa_rpc.cma"
+   )

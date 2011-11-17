@@ -1,3 +1,5 @@
+This is a rewrite of the fork and exec daemon init script for Debian (instead of RedHat).
+
 --- a/forking_executioner/init.d-fe
 +++ b/forking_executioner/init.d-fe
 @@ -1,99 +1,157 @@

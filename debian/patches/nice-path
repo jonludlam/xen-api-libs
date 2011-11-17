@@ -1,3 +1,5 @@
+Fixes the path to the nice binary.
+
 --- a/stdext/gzip.ml
 +++ b/stdext/gzip.ml
 @@ -34,7 +34,7 @@

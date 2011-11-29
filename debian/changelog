@@ -1,3 +1,15 @@
+xen-api-libs (0.5.1-1ubuntu1) oneiric; urgency=low
+
+  * Ubuntu Oneiric bump
+
+ -- Mike McClurg <mike.mcclurg@citrix.com>  Tue, 29 Nov 2011 18:13:32 +0000
+
+xen-api-libs (0.5.1-1) unstable; urgency=low
+
+  * Increment upstream version number
+
+ -- Mike McClurg <mike.mcclurg@citrix.com>  Tue, 29 Nov 2011 18:11:17 +0000
+
 xen-api-libs (0.5-5ubuntu1) oneiric; urgency=low
 
   * Ubuntu Oneiric bump

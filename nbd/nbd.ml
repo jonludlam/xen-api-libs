@@ -135,6 +135,27 @@ let negotiate sock =
 	let _ = Bitstring.bitstring_of_file_descr_max sock 124 in
 	(sz,flags_of_flags (Int32.to_int flags))
 
+let fold_right f string accu =
+	let accu = ref accu in
+	for i = String.length string - 1 downto 0 do
+		accu := f string.[i] !accu
+	done;
+	!accu
+
+let explode string =
+	fold_right (fun h t -> h :: t) string []
+
+let to_hex bitstr =
+	let str = Bitstring.string_of_bitstring bitstr in
+	let lines,_ = List.fold_left (fun (cur::lines,i) c -> 
+		if i mod 8 = 7 then 
+			(""::(Printf.sprintf "%s 0x%2x\n" cur (Char.code c))::lines,i+1)
+		else
+			((Printf.sprintf "%s 0x%2x" cur (Char.code c))::lines,i+1)) ([""],0) 
+		(explode str)
+	in
+	String.concat "" lines
+		
 let read sock from len =
 	let request = {
 		Request.ty = NBD_cmd_read;
@@ -144,11 +165,14 @@ let read sock from len =
 	let msg = construct_request request in
 	Unixext.really_write_string sock msg;
 	let reply = Bitstring.bitstring_of_file_descr_max sock 16 in
-	let parsed = parse_reply reply in
+	let parsed = try parse_reply reply with e -> 
+		failwith (Printf.sprintf "Bad magic in reply: got '%s'" (to_hex reply))
+	in
 	if parsed.Reply.error=0l then 
 		Some (Unixext.really_read_string sock (Int32.to_int len))
 	else
 		None
+		
 
 let write sock str from =
 	let request = {
@@ -161,7 +185,9 @@ let write sock str from =
 	Unixext.really_write_string sock msg;
 	Unixext.really_write_string sock str;
 	let reply = Bitstring.bitstring_of_file_descr_max sock 16 in
-	let parsed = parse_reply reply in
+	let parsed = try parse_reply reply with e -> 
+		failwith (Printf.sprintf "Bad magic in reply: got '%s'" (to_hex reply))
+	in
 	if parsed.Reply.error=0l then 
 		None
 	else

@@ -275,7 +275,11 @@ module XML = struct
 	let response_of_file_descr fd = Xml.parse_in (Unix.in_channel_of_descr fd)
 	type request = Xml.xml
 	let request_to_string = Xml.to_string
-	let request_to_short_string = Xml.to_string
+	let request_to_short_string xml = 
+		match xml with 
+			| Xml.Element ("methodCall",_,(Xml.Element ("methodName",_,[x]))::_) -> Xml.to_string x
+			| _ -> Xml.to_string xml
+
 end
 
 module XMLRPC = struct

@@ -1,0 +1,11 @@
+xen-api-libs (0.6.0-1) precise; urgency=low
+
+  * New upstream release 
+
+ -- Jon Ludlam <jon@fungus>  Thu, 13 Sep 2012 17:00:23 +0100
+
+xen-api-libs (0.5.2-3) unstable; urgency=low
+
+  * Initial release (Closes: #646727).
+
+ -- Jon Ludlam <jon@frankenelmo.uk.xensource.com>  Thu, 08 Dec 2011 11:07:39 +0000

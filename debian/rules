@@ -1,0 +1,12 @@
+#!/usr/bin/make -f
+
+# This has to be exported to make some magic below work.
+export DH_OPTIONS
+
+include /usr/share/ocaml/ocamlvars.mk
+
+export DESTDIR=$(CURDIR)/debian/tmp
+export OCAMLDESTDIR=$(DESTDIR)/$(OCAML_STDLIB_DIR)/xcp
+
+%:
+	dh $@ --with autoreconf,ocaml

@@ -97,8 +97,8 @@ let test_radix_tree2 _ =
 let test_url _ =
 	let open Http in
 	let open Http.Url in
-	begin match of_string "file:/var/xapi/storage" with
-		| File { path = "/var/xapi/storage" }, { uri = "/" } -> ()
+	begin match of_string "file:/var/lib/xcp/storage" with
+		| File { path = "/var/lib/xcp/storage" }, { uri = "/" } -> ()
 		| _ -> assert false
 	end;
 	begin match of_string "http://root:foo@localhost" with

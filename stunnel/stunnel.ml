@@ -23,7 +23,7 @@ exception Stunnel_verify_error of string
 
 let certificate_path = "/etc/stunnel/certs"
 let crl_path = "/etc/stunnel/crls"
-let verify_certificates_ctrl = "/var/xapi/verify_certificates"
+let verify_certificates_ctrl = "/var/lib/xcp/verify_certificates"
 
 let use_new_stunnel = ref false
 let new_stunnel_path = "/usr/sbin/stunnelng"
